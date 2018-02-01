@@ -8,6 +8,7 @@ RUN apt-get update \
         dnsutils \
         telnet \
         tcpdump \
+    && apt-get autoremove -y
     && rm -rf /var/lib/apt/lists/*
 
 ADD https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl /usr/local/bin/kubectl

@@ -15,6 +15,9 @@ ifdef TRAVIS
 	ifneq ($(TRAVIS_TAG),)
 		LATEST_TAG := "latest"
 		VERSION_TAG := "$(VERSION)"
+  else
+		LATEST_TAG := "$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
+		VERSION_TAG := "$(VERSION)-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"    
 	endif
 else
 	BUILD_TAG := "local-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"

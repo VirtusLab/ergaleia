@@ -47,7 +47,7 @@ docker-build: ## Build the container
 .PHONY: docker-push
 docker-push: ## Push the container
 	@echo "+ $@"
-	@docker login -u="$(QUAY_USER)" -p="$(QUAY_PASS)" quay.io
+	@docker login -u="${QUAY_USER}" -p="${QUAY_PASS}" quay.io
 	@docker push quay.io/$(GITCOMMIT):$(VERSION_TAG)
 	@docker push quay.io/$(GITCOMMIT):$(BUILD_TAG)
 	@docker push quay.io/$(GITCOMMIT):$(LATEST_TAG)

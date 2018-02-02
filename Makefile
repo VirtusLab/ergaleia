@@ -1,6 +1,6 @@
 # Setup name variables for the package/tool
 NAME := ergaleia
-REPO := codem8s/ergaleia
+REPO := codem8s/$(NAME)
 
 VERSION := $(shell cat VERSION)
 KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
@@ -28,7 +28,7 @@ endif
 .DEFAULT_GOAL := help
 
 .PHONY: all
-all: docker-build docker-push ## Runs a docker-build, docker-push
+all: docker-build docker-images docker-push ## Runs a docker-build, docker-images, docker-push
 
 .PHONY: docker-build
 docker-build: ## Build the container
@@ -44,13 +44,18 @@ docker-build: ## Build the container
 	@docker tag $(REPO):$(GITCOMMIT) quay.io/$(REPO):$(BUILD_TAG)
 	@docker tag $(REPO):$(GITCOMMIT) quay.io/$(REPO):$(LATEST_TAG)
 
+.PHONY: docker-images
+docker-push: ## List all local containers
+	@echo "+ $@"
+	@docker images
+
 .PHONY: docker-push
 docker-push: ## Push the container
 	@echo "+ $@"
 	@docker login -u="${QUAY_USER}" -p="${QUAY_PASS}" quay.io
-	@docker push quay.io/$(GITCOMMIT):$(VERSION_TAG)
-	@docker push quay.io/$(GITCOMMIT):$(BUILD_TAG)
-	@docker push quay.io/$(GITCOMMIT):$(LATEST_TAG)
+	@docker push quay.io/$(REPO):$(VERSION_TAG)
+	@docker push quay.io/$(REPO):$(BUILD_TAG)
+	@docker push quay.io/$(REPO):$(LATEST_TAG)
 
 .PHONY: bump-version
 BUMP := patch

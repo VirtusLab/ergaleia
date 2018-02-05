@@ -1,0 +1,156 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: toolbox
+  labels:
+    name: toolbox
+  annotations:
+    iam.amazonaws.com/allowed-roles: ""
+
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  namespace: toolbox
+  name: default-deny-ingress
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  namespace: toolbox
+  name: ergaleia
+  labels:
+    name: ergaleia
+    k8s-app: ergaleia
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  namespace: toolbox
+  name: ergaleia
+  labels:
+    name: ergaleia
+    k8s-app: ergaleia
+rules:
+  - apiGroups: ["extensions",""]
+    resources: ["nodes","namespaces","pods","replicationcontrollers","services","events"]
+    verbs: ["get","list","watch"]
+  - nonResourceURLs: ["/healthz", "/healthz/*"]
+    verbs: ["get"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  namespace: toolbox
+  name: ergaleia
+  labels:
+    name: ergaleia
+    k8s-app: ergaleia
+subjects:
+  - kind: ServiceAccount
+    namespace: toolbox
+    name: ergaleia
+roleRef:
+  kind: ClusterRole
+  name: ergaleia
+  apiGroup: rbac.authorization.k8s.io
+
+---
+kind: StatefulSet
+apiVersion: apps/v1beta1
+metadata:
+  name: ergaleia
+  namespace: toolbox
+  labels:
+    name: ergaleia
+    k8s-app: ergaleia
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  serviceName: none
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: ergaleia
+    spec:
+      serviceAccountName: ergaleia
+      # enforce running on a master node
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: Exists
+      # tolerate running on a master node
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: ergaleia
+        image: quay.io/codem8s/ergaleia:v0.0.1
+        # not using command to not override the container entrypoint
+        args:
+        - "/bin/bash"
+        - "-c"
+        - "sleep infinity"
+        tty: true
+        stdin: true
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /host/var/run/docker.sock
+          name: docker-sock
+          readOnly: false
+        - mountPath: /host/dev
+          name: dev-vol
+          readOnly: false
+        - mountPath: /host/proc
+          name: proc-vol
+          readOnly: true
+        - mountPath: /host/boot
+          name: boot-vol
+          readOnly: true
+        - mountPath: /host/lib/modules
+          name: modules-vol
+          readOnly: true
+        - mountPath: /host/usr
+          name: usr-vol
+          readOnly: true
+        - mountPath: /dev/shm
+          name: dshm
+      # use kube-dns from DNS resolution
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      hostPID: true
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+      - name: dev-vol
+        hostPath:
+          path: /dev
+      - name: proc-vol
+        hostPath:
+          path: /proc
+      - name: boot-vol
+        hostPath:
+          path: /boot
+      - name: modules-vol
+        hostPath:
+          path: /lib/modules
+      - name: usr-vol
+        hostPath:
+          path: /usr
+      - name: dshm
+        emptyDir:
+          medium: Memory

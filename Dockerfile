@@ -8,6 +8,7 @@ RUN apt-get update \
         dnsutils \
         telnet \
         tcpdump \
+        inetutils-traceroute \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 

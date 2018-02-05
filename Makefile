@@ -60,12 +60,15 @@ docker-push: docker-login ## Push the container
 BUMP := patch
 bump-version: ## Bump the version in the version file. Set BUMP to [ patch | major | minor ]
 	@go get -u github.com/jessfraz/junk/sembump # update sembump tool
+	$(shell command -v sembump)
 	$(eval NEW_VERSION=$(shell sembump --kind $(BUMP) $(VERSION)))
 	@echo "Bumping VERSION from $(VERSION) to $(NEW_VERSION)"
 	echo $(NEW_VERSION) > VERSION
-	@echo "Updating links to download binaries in README.md"
+	@echo "Updating version from $(VERSION) to $(NEW_VERSION) in README.md"
 	sed -i s/$(VERSION)/$(NEW_VERSION)/g README.md
-	git add VERSION README.md
+	@echo "Updating version from $(VERSION) to $(NEW_VERSION) in kubernetes/ergaleia.yaml"
+	sed -i s/$(VERSION)/$(NEW_VERSION)/g kubernetes/ergaleia.yaml
+	git add VERSION README.md kubernetes/ergaleia.yaml
 	git commit -vsam "Bump version to $(NEW_VERSION)"
 	@echo "Run make tag to create and push the tag for new version $(NEW_VERSION)"
 

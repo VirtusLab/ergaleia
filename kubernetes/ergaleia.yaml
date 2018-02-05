@@ -39,8 +39,11 @@ metadata:
     k8s-app: ergaleia
 rules:
   - apiGroups: ["extensions",""]
-    resources: ["nodes","namespaces","pods","replicationcontrollers","services","events"]
+    resources: ["nodes","namespaces","pods","pods/log","pods/exec","replicationcontrollers","deployments","replicasets","services","events"]
     verbs: ["get","list","watch"]
+  - apiGroups: ["extensions",""]
+    resources: ["pods","replicationcontrollers","replicasets","services"]
+    verbs: ["delete"]
   - nonResourceURLs: ["/healthz", "/healthz/*"]
     verbs: ["get"]
 
@@ -98,9 +101,9 @@ spec:
       containers:
       - name: ergaleia
         image: quay.io/codem8s/ergaleia:v0.0.1
-        # not using command to not override the container entrypoint
+        command:
+        - /bin/bash
         args:
-        - "/bin/bash"
         - "-c"
         - "sleep infinity"
         tty: true

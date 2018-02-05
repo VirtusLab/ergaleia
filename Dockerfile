@@ -2,13 +2,19 @@ FROM sysdig/sysdig:latest
 
 ENV KUBERNETES_VERSION v1.9.2
 
-RUN apt-get update \
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \
+    && apt-key fingerprint 0EBFCD88 \
+    && echo "deb [arch=amd64] https://download.docker.com/linux/debian jessie stable" > /etc/apt/sources.list.d/docker.list \
+    && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
+        apt-transport-https \
+        apt-utils \
         dnsutils \
         telnet \
         tcpdump \
         inetutils-traceroute \
+        docker-ce \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 

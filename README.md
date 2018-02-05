@@ -29,16 +29,16 @@ The command will get it's credentials from the service token, no special configu
 
 The image is based on Debian, so if there's anything missing just use `apt`.
 
-Selected pre-installed packages:
-- `curl`
-- `gnupg2`
-- `gcc`
-- `less`
-- `dnsutils` (`dig`)
-- `telnet`
-- `tcpdump`
-- `inetutils-traceroute`
-
-Selected pre-installed binaries:
+Most important pre-installed commands:
 - `sysdig` and `csysdig`
 - `kubectl`
+- `docker`
+
+Other selected pre-installed commands:
+- `curl`
+- `gcc`
+- `less`
+- `dig` and `nslookup`
+- `telnet`
+- `tcpdump`
+- `traceroute`

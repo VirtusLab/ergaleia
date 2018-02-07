@@ -3,6 +3,10 @@
 config ?= config.env
 include $(config)
 
+ifeq ($(KUBERNETES_VERSION),)
+	$(error KUBERNETES_VERSION is undefined)
+endif
+
 VERSION := $(shell cat VERSION)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
 GITBRANCH := $(shell git rev-parse --abbrev-ref HEAD)

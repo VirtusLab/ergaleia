@@ -15,9 +15,9 @@ Kubernetes toolbox in a pod, with [Sysdig](https://github.com/draios/sysdig) and
 
 ### Sysdig
 
-To run `csysdig` with Kubernetes access:
+To run `csysdig` with a Kubernetes service token, here's an alias:
 
-    csysdig -k https://kubernetes.default.svc.cluster.local -K /var/run/secrets/kubernetes.io/serviceaccount/token
+    ksysdig
     
 ### kubectl
 

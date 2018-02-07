@@ -1,6 +1,6 @@
 FROM sysdig/sysdig:latest
 
-ENV KUBERNETES_VERSION v1.9.2
+ARG KUBERNETES_VERSION
 
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \
     && apt-key fingerprint 0EBFCD88 \
@@ -20,3 +20,6 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \
 
 ADD https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl /usr/local/bin/kubectl
 RUN chmod +x /usr/local/bin/kubectl
+
+ADD ksysdig /usr/local/bin/ksysdig
+RUN chmod +x /usr/local/bin/ksysdig

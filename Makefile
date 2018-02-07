@@ -3,27 +3,31 @@
 config ?= config.env
 include $(config)
 
+LATEST_KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+KUBERNETES_VERSION ?= $(LATEST_KUBERNETES_VERSION)
+
 VERSION := $(shell cat VERSION)
-KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
+GITBRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
 ifneq ($(GITUNTRACKEDCHANGES),)
 	GITCOMMIT := $(GITCOMMIT)-dirty
 endif
 
+LATEST_TAG := "v$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
+VERSION_TAG := "v$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
+BUILD_TAG := "$(GITBRANCH)-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
+
 ifdef TRAVIS
 	ifneq ($(TRAVIS_TAG),)
-		LATEST_TAG := "latest"
-		VERSION_TAG := "$(VERSION)"
-	else
-		LATEST_TAG := "latest-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
-		VERSION_TAG := "v$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"    
+		LATEST_TAG := "$(VERSION)-k8s$(KUBERNETES_VERSION)"
+		VERSION_TAG := "$(VERSION)-k8s$(KUBERNETES_VERSION)"
 	endif
-	BUILD_TAG := "travis-$(TRAVIS_BUILD_NUMBER)-$(TRAVIS_BRANCH)-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"  
-else
-	LATEST_TAG := "local-latest-k8s$(KUBERNETES_VERSION)"
-	VERSION_TAG := "local-$(VERSION)-k8s$(KUBERNETES_VERSION)"
-	BUILD_TAG := "local-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
+	BUILD_TAG := "travis-$(TRAVIS_BUILD_NUMBER)-$(GITBRANCH)-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
+endif
+
+ifeq ($(KUBERNETES_VERSION),$(LATEST_KUBERNETES_VERSION))
+	LATEST_TAG := "latest"
 endif
 
 .DEFAULT_GOAL := help
@@ -34,7 +38,7 @@ all: docker-build docker-images docker-push ## Runs a docker-build, docker-image
 .PHONY: docker-build
 docker-build: ## Build the container
 	@echo "+ $@"
-	@docker build -t $(REPO):$(GITCOMMIT) .
+	@docker build --build-arg KUBERNETES_VERSION=$(KUBERNETES_VERSION) -t $(REPO):$(GITCOMMIT) .
 	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
 	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
 	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(BUILD_TAG)

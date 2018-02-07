@@ -4,7 +4,9 @@ config ?= config.env
 include $(config)
 
 LATEST_KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-KUBERNETES_VERSION ?= $(LATEST_KUBERNETES_VERSION)
+ifeq ($(KUBERNETES_VERSION),)
+	KUBERNETES_VERSION := $(LATEST_KUBERNETES_VERSION)
+endif
 
 VERSION := $(shell cat VERSION)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
@@ -23,7 +25,7 @@ ifdef TRAVIS
 		LATEST_TAG := "$(VERSION)-k8s$(KUBERNETES_VERSION)"
 		VERSION_TAG := "$(VERSION)-k8s$(KUBERNETES_VERSION)"
 	endif
-	BUILD_TAG := "travis-$(TRAVIS_BUILD_NUMBER)-$(GITBRANCH)-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
+	BUILD_TAG := "travis-$(TRAVIS_BUILD_NUMBER)-$(TRAVIS_BRANCH)-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
 endif
 
 ifeq ($(KUBERNETES_VERSION),$(LATEST_KUBERNETES_VERSION))

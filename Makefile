@@ -3,10 +3,6 @@
 config ?= config.env
 include $(config)
 
-ifeq ($(KUBERNETES_VERSION),)
-	$(error KUBERNETES_VERSION is undefined)
-endif
-
 VERSION := $(shell cat VERSION)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
 GITBRANCH := $(shell git rev-parse --abbrev-ref HEAD)
@@ -15,28 +11,34 @@ ifneq ($(GITUNTRACKEDCHANGES),)
 	GITCOMMIT := $(GITCOMMIT)-dirty
 endif
 
-LATEST_TAG := "v$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
-VERSION_TAG := "v$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
-BUILD_TAG := "$(GITBRANCH)-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
+LATEST_KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/latest.txt)
+STABLE_KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+KUBERNETES_VERSION ?= latest
 
-ifdef TRAVIS
-	ifneq ($(TRAVIS_TAG),)
-		LATEST_TAG := "$(VERSION)-k8s$(KUBERNETES_VERSION)"
-		VERSION_TAG := "$(VERSION)-k8s$(KUBERNETES_VERSION)"
-	endif
-	BUILD_TAG := "travis-$(TRAVIS_BUILD_NUMBER)-$(TRAVIS_BRANCH)-$(GITCOMMIT)-k8s$(KUBERNETES_VERSION)"
-endif
+VERSION_TAG := v$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
+LATEST_TAG := v$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
+BUILD_TAG := $(GITBRANCH)-$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
 
 ifeq ($(KUBERNETES_VERSION),stable)
-	KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-	LATEST_TAG := "stable"
-	VERSION_TAG := "$(VERSION)"
+	override KUBERNETES_VERSION := $(STABLE_KUBERNETES_VERSION)
+	VERSION_TAG := $(VERSION)
+	LATEST_TAG := stable
+	BUILD_TAG := $(GITBRANCH)-$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
 endif
 
 ifeq ($(KUBERNETES_VERSION),latest)
-	KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/latest.txt)
-	LATEST_TAG := "latest"
-	VERSION_TAG := "$(VERSION)"
+	override KUBERNETES_VERSION := $(LATEST_KUBERNETES_VERSION)
+	VERSION_TAG := $(VERSION)
+	LATEST_TAG := latest
+	BUILD_TAG := $(GITBRANCH)-$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
+endif
+
+ifdef TRAVIS
+	ifneq ($(TRAVIS_TAG),)
+		VERSION_TAG := $(VERSION)-k8s-$(KUBERNETES_VERSION)
+		LATEST_TAG := $(VERSION)-k8s-$(KUBERNETES_VERSION)
+	endif
+	BUILD_TAG := travis-$(TRAVIS_BUILD_NUMBER)-$(TRAVIS_BRANCH)-$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
 endif
 
 .DEFAULT_GOAL := help
@@ -44,8 +46,18 @@ endif
 .PHONY: all
 all: docker-build docker-images docker-push ## Runs a docker-build, docker-images, docker-push
 
+.PHONY: check-env
+check-env: ## Checks the environment variables
+ifndef KUBERNETES_VERSION
+	$(error KUBERNETES_VERSION is undefined)
+endif
+	@echo "KUBERNETES_VERSION: $(KUBERNETES_VERSION)"
+	@echo "VERSION_TAG: $(VERSION_TAG)"
+	@echo "LATEST_TAG: $(LATEST_TAG)"
+	@echo "BUILD_TAG: $(BUILD_TAG)"
+
 .PHONY: docker-build
-docker-build: ## Build the container
+docker-build: check-env ## Build the container
 	@echo "+ $@"
 	@docker build --build-arg KUBERNETES_VERSION=$(KUBERNETES_VERSION) -t $(REPO):$(GITCOMMIT) .
 	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)

@@ -39,8 +39,11 @@ metadata:
     k8s-app: ergaleia
 rules:
   - apiGroups: ["extensions",""]
-    resources: ["nodes","namespaces","pods","pods/log","pods/exec","replicationcontrollers","deployments","replicasets","services","events"]
+    resources: ["nodes","namespaces","pods","pods/log","replicationcontrollers","deployments","replicasets","services","events"]
     verbs: ["get","list","watch"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
   - apiGroups: ["extensions",""]
     resources: ["pods","replicationcontrollers","replicasets","services"]
     verbs: ["delete"]
@@ -111,6 +114,11 @@ spec:
         securityContext:
           privileged: true
         volumeMounts:
+        # for docker
+        - mountPath: /var/run/docker.sock
+          name: docker-sock
+          readOnly: false
+        # for sysdig
         - mountPath: /host/var/run/docker.sock
           name: docker-sock
           readOnly: false

@@ -35,6 +35,7 @@ Most important pre-installed commands:
 - `docker`
 
 Other selected pre-installed commands:
+- `vim`
 - `curl`
 - `gcc`
 - `less`

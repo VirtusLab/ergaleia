@@ -30,11 +30,11 @@ ifneq ($(TRAVIS_TAG),)
 	override DETAILED_TAG := $(TRAVIS_TAG)-$(GITCOMMIT)-$(KUBERNETES_VERSION)
 	override VERSION_TAG := $(TRAVIS_TAG)-$(KUBERNETES_VERSION)
 	override LATEST_TAG := old
-	ifeq ($(KUBERNETES_VERSION),stable)
+	ifeq ($(KUBERNETES_VERSION),$(STABLE_KUBERNETES_VERSION))
 		override VERSION_TAG := $(TRAVIS_TAG)
 		override LATEST_TAG := stable
 	endif
-	ifeq ($(KUBERNETES_VERSION),latest)
+	ifeq ($(KUBERNETES_VERSION),$(LATEST_KUBERNETES_VERSION))
 		override LATEST_TAG := edge
 	endif
 endif

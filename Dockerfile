@@ -1,6 +1,6 @@
 FROM sysdig/sysdig:latest
 
-ARG KUBERNETES_VERSION
+ARG KUBERNETES_VERSION=v1.9.3
 
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \
     && apt-key fingerprint 0EBFCD88 \

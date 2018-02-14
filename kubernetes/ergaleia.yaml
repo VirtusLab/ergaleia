@@ -103,7 +103,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: ergaleia
-        image: quay.io/codem8s/ergaleia:v0.0.4
+        image: quay.io/codem8s/ergaleia:v0.0.5
         command:
         - /bin/bash
         args:

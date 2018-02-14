@@ -15,30 +15,29 @@ LATEST_KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kube
 STABLE_KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 KUBERNETES_VERSION ?= latest
 
-VERSION_TAG := v$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
-LATEST_TAG := v$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
-BUILD_TAG := $(GITBRANCH)-$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
+DETAILED_TAG := v$(GITCOMMIT)-$(KUBERNETES_VERSION)
+VERSION_TAG := v$(GITCOMMIT)-$(KUBERNETES_VERSION)
+LATEST_TAG := v$(GITCOMMIT)-$(KUBERNETES_VERSION)
 
 ifeq ($(KUBERNETES_VERSION),stable)
 	override KUBERNETES_VERSION := $(STABLE_KUBERNETES_VERSION)
-	VERSION_TAG := $(VERSION)
-	LATEST_TAG := stable
-	BUILD_TAG := $(GITBRANCH)-$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
 endif
 
 ifeq ($(KUBERNETES_VERSION),latest)
 	override KUBERNETES_VERSION := $(LATEST_KUBERNETES_VERSION)
-	VERSION_TAG := $(VERSION)-k8s-$(KUBERNETES_VERSION)
-	LATEST_TAG := latest
-	BUILD_TAG := $(GITBRANCH)-$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
 endif
 
 ifdef TRAVIS
 	ifneq ($(TRAVIS_TAG),)
-		VERSION_TAG := $(VERSION)-k8s-$(KUBERNETES_VERSION)
-		LATEST_TAG := $(VERSION)-k8s-$(KUBERNETES_VERSION)
+		ifeq ($(KUBERNETES_VERSION),stable)
+			VERSION_TAG := $(VERSION)
+			LATEST_TAG := stable
+		endif
+		ifeq ($(KUBERNETES_VERSION),latest)
+			VERSION_TAG := $(VERSION)-$(KUBERNETES_VERSION)
+			LATEST_TAG := edge
+		endif
 	endif
-	BUILD_TAG := travis-$(TRAVIS_BUILD_NUMBER)-$(TRAVIS_BRANCH)-$(GITCOMMIT)-k8s-$(KUBERNETES_VERSION)
 endif
 
 .DEFAULT_GOAL := help
@@ -52,17 +51,17 @@ ifndef KUBERNETES_VERSION
 	$(error KUBERNETES_VERSION is undefined)
 endif
 	@echo "KUBERNETES_VERSION: $(KUBERNETES_VERSION)"
+	@echo "DETAILED_TAG: $(DETAILED_TAG)"
 	@echo "VERSION_TAG: $(VERSION_TAG)"
 	@echo "LATEST_TAG: $(LATEST_TAG)"
-	@echo "BUILD_TAG: $(BUILD_TAG)"
 
 .PHONY: docker-build
 docker-build: check-env ## Build the container
 	@echo "+ $@"
 	@docker build --build-arg KUBERNETES_VERSION=$(KUBERNETES_VERSION) -t $(REPO):$(GITCOMMIT) .
-	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
+	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
 	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
-	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(BUILD_TAG)
+	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
 
 .PHONY: docker-login
 docker-login: ## Log in into the repository
@@ -77,9 +76,9 @@ docker-images: ## List all local containers
 .PHONY: docker-push
 docker-push: docker-login ## Push the container
 	@echo "+ $@"
-	@docker push $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
+	@docker push $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
 	@docker push $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
-	@docker push $(DOCKER_REGISTRY)/$(REPO):$(BUILD_TAG)
+	@docker push $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
 
 .PHONY: bump-version
 BUMP := patch

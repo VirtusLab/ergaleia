@@ -6,11 +6,11 @@ Kubernetes toolbox in a pod, with [Sysdig](https://github.com/draios/sysdig) and
 
 ## Installation and Usage
 
-    kubectl apply -f https://raw.githubusercontent.com/codem8s/ergaleia/master/kubernetes/ergaleia.yaml
+    kubectl apply -f https://raw.githubusercontent.com/VirtusLab/ergaleia/master/kubernetes/ergaleia.yaml
     kubectl exec -n toolbox -it ergaleia-0
 
-    docker pull quay.io/codem8s/ergaleia:v0.0.4
-    docker run quay.io/codem8s/ergaleia:v0.0.4
+    docker pull quay.io/VirtusLab/ergaleia:v0.0.4
+    docker run quay.io/VirtusLab/ergaleia:v0.0.4
 
 ### Sysdig
 

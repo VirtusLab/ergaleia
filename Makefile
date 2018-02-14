@@ -5,19 +5,18 @@ include $(config)
 
 VERSION := $(shell cat VERSION)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
-GITBRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
 ifneq ($(GITUNTRACKEDCHANGES),)
 	GITCOMMIT := $(GITCOMMIT)-dirty
 endif
 
+KUBERNETES_VERSION ?= latest
 LATEST_KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/latest.txt)
 STABLE_KUBERNETES_VERSION := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-KUBERNETES_VERSION ?= latest
 
-DETAILED_TAG := v$(GITCOMMIT)-$(KUBERNETES_VERSION)
-VERSION_TAG := v$(GITCOMMIT)-$(KUBERNETES_VERSION)
-LATEST_TAG := v$(GITCOMMIT)-$(KUBERNETES_VERSION)
+DETAILED_TAG := $(GITCOMMIT)-$(KUBERNETES_VERSION)
+VERSION_TAG := $(GITCOMMIT)-$(KUBERNETES_VERSION)
+LATEST_TAG := $(GITCOMMIT)-$(KUBERNETES_VERSION)
 
 ifeq ($(KUBERNETES_VERSION),stable)
 	override KUBERNETES_VERSION := $(STABLE_KUBERNETES_VERSION)
@@ -27,16 +26,16 @@ ifeq ($(KUBERNETES_VERSION),latest)
 	override KUBERNETES_VERSION := $(LATEST_KUBERNETES_VERSION)
 endif
 
-ifdef TRAVIS
-	ifneq ($(TRAVIS_TAG),)
-		ifeq ($(KUBERNETES_VERSION),stable)
-			VERSION_TAG := $(VERSION)
-			LATEST_TAG := stable
-		endif
-		ifeq ($(KUBERNETES_VERSION),latest)
-			VERSION_TAG := $(VERSION)-$(KUBERNETES_VERSION)
-			LATEST_TAG := edge
-		endif
+ifeq ($(TRAVIS_TAG),)
+	override DETAILED_TAG := $(TRAVIS_TAG)-$(GITCOMMIT)-$(KUBERNETES_VERSION)
+	override VERSION_TAG := $(TRAVIS_TAG)-$(KUBERNETES_VERSION)
+	override LATEST_TAG := old
+	ifeq ($(KUBERNETES_VERSION),stable)
+		override VERSION_TAG := $(TRAVIS_TAG)
+		override LATEST_TAG := stable
+	endif
+	ifeq ($(KUBERNETES_VERSION),latest)
+		override LATEST_TAG := edge
 	endif
 endif
 

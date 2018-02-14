@@ -1,17 +1,17 @@
 # ergaleia
-[![Version](https://img.shields.io/badge/version-v0.0.5-brightgreen.svg)](https://quay.io/VirtusLab/ergaleia:v0.0.5)
-[![Build Status](https://secure.travis-ci.org/VirtusLab/ergaleia.svg?branch=master)](http://travis-ci.org/VirtusLab/ergaleia)
-[![Docker Repository on Quay.io](https://quay.io/repository/VirtusLab/ergaleia/status "Docker Repository on Quay.io")](https://quay.io/repository/VirtusLab/ergaleia)
+[![Version](https://img.shields.io/badge/version-v0.0.5-brightgreen.svg)](https://quay.io/virtuslab/ergaleia:v0.0.5)
+[![Build Status](https://secure.travis-ci.org/virtuslab/ergaleia.svg?branch=master)](http://travis-ci.org/virtuslab/ergaleia)
+[![Docker Repository on Quay.io](https://quay.io/repository/virtuslab/ergaleia/status "Docker Repository on Quay.io")](https://quay.io/repository/virtuslab/ergaleia)
 
 Kubernetes toolbox in a pod, with [Sysdig](https://github.com/draios/sysdig) and friends
 
 ## Installation and Usage
 
-    kubectl apply -f https://raw.githubusercontent.com/VirtusLab/ergaleia/master/kubernetes/ergaleia.yaml
+    kubectl apply -f https://raw.githubusercontent.com/virtuslab/ergaleia/master/kubernetes/ergaleia.yaml
     kubectl exec -n toolbox -it ergaleia-0
 
-    docker pull quay.io/VirtusLab/ergaleia:v0.0.5
-    docker run quay.io/VirtusLab/ergaleia:v0.0.5
+    docker pull quay.io/virtuslab/ergaleia:v0.0.5
+    docker run quay.io/virtuslab/ergaleia:v0.0.5
 
 ### Sysdig
 

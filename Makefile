@@ -66,7 +66,7 @@ docker-build: check-env ## Build the container
 .PHONY: docker-login
 docker-login: ## Log in into the repository
 	@echo "+ $@"
-	@docker login -u="${QUAY_USER}" -p="${QUAY_PASS}" $(DOCKER_REGISTRY)
+	@docker login -u="${DOCKER_USER}" -p="${DOCKER_PASS}" $(DOCKER_REGISTRY)
 
 .PHONY: docker-images
 docker-images: ## List all local containers

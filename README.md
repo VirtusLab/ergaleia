@@ -1,5 +1,6 @@
 # ergaleia
 [![Version](https://img.shields.io/badge/version-v0.0.4-brightgreen.svg)](https://quay.io/VirtusLab/ergaleia:v0.0.4)
+[![Build Status](https://secure.travis-ci.org/VirtusLab/ergaleia.svg?branch=master)](http://travis-ci.org/VirtusLab/ergaleia)
 [![Docker Repository on Quay.io](https://quay.io/repository/VirtusLab/ergaleia/status "Docker Repository on Quay.io")](https://quay.io/repository/VirtusLab/ergaleia)
 
 Kubernetes toolbox in a pod, with [Sysdig](https://github.com/draios/sysdig) and friends

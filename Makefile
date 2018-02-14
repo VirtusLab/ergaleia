@@ -53,6 +53,7 @@ endif
 	@echo "DETAILED_TAG: $(DETAILED_TAG)"
 	@echo "VERSION_TAG: $(VERSION_TAG)"
 	@echo "LATEST_TAG: $(LATEST_TAG)"
+	@echo "TRAVIS_TAG: $(TRAVIS_TAG)"
 
 .PHONY: docker-build
 docker-build: check-env ## Build the container

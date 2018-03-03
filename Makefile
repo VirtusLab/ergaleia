@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 # Import config
 # You can change the default config with `make config="config_special.env" build`
 config ?= config.env
@@ -42,7 +44,7 @@ endif
 .DEFAULT_GOAL := help
 
 .PHONY: all
-all: docker-build docker-images docker-push ## Runs a docker-build, docker-images, docker-push
+all: init docker-build docker-images docker-push ## Runs init, docker-build, docker-images, docker-push
 
 .PHONY: check-env
 check-env: ## Checks the environment variables
@@ -58,33 +60,32 @@ endif
 .PHONY: docker-build
 docker-build: check-env ## Build the container
 	@echo "+ $@"
-	@docker build --build-arg KUBERNETES_VERSION=$(KUBERNETES_VERSION) -t $(REPO):$(GITCOMMIT) .
-	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
-	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
-	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
+	img build --build-arg KUBERNETES_VERSION=$(KUBERNETES_VERSION) -t $(REPO):$(GITCOMMIT) .
+	img tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
+	img tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
+	img tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
 
 .PHONY: docker-login
 docker-login: ## Log in into the repository
 	@echo "+ $@"
-	@docker login -u="${DOCKER_USER}" -p="${DOCKER_PASS}" $(DOCKER_REGISTRY)
+	@img login -u="${DOCKER_USER}" -p="${DOCKER_PASS}" $(DOCKER_REGISTRY)
 
 .PHONY: docker-images
 docker-images: ## List all local containers
 	@echo "+ $@"
-	@docker images
+	img images
 
 .PHONY: docker-push
 docker-push: docker-login ## Push the container
 	@echo "+ $@"
-	@docker push $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
-	@docker push $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
-	@docker push $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
+	img push $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
+	img push $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
+	img push $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
 
 .PHONY: bump-version
 BUMP := patch
 bump-version: ## Bump the version in the version file. Set BUMP to [ patch | major | minor ]
-	@go get -u github.com/jessfraz/junk/sembump # update sembump tool
-	$(shell command -v sembump)
+	go get -u github.com/jessfraz/junk/sembump # update sembump tool
 	$(eval NEW_VERSION=$(shell sembump --kind $(BUMP) $(VERSION)))
 	@echo "Bumping VERSION from $(VERSION) to $(NEW_VERSION)"
 	echo $(NEW_VERSION) > VERSION
@@ -100,6 +101,15 @@ bump-version: ## Bump the version in the version file. Set BUMP to [ patch | maj
 tag: ## Create a new git tag to prepare to build a release
 	git tag -sa $(VERSION) -m "$(VERSION)"
 	@echo "Run git push origin $(VERSION) to push your new tag to GitHub and trigger a travis build."
+
+.PHONY: init
+HAS_GIT := $(shell command -v git)
+init: ## Check build time dependencies
+ifndef HAS_GIT
+	$(error You must install git)
+endif
+	go get -u github.com/opencontainers/runc
+	go get -u github.com/jessfraz/img
 
 .PHONY: help
 help:

@@ -8,7 +8,7 @@ Kubernetes toolbox in a pod, with [Sysdig](https://github.com/draios/sysdig) and
 ## Installation and Usage
 
     kubectl apply -f https://raw.githubusercontent.com/virtuslab/ergaleia/master/kubernetes/ergaleia.yaml
-    kubectl exec -n toolbox -it ergaleia-0
+    kubectl exec -n toolbox -it ergaleia-0 bash
 
     docker pull quay.io/virtuslab/ergaleia:v0.0.5
     docker run quay.io/virtuslab/ergaleia:v0.0.5

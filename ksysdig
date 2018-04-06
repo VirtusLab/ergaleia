@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
+/docker-entrypoint.sh
+
 /usr/bin/csysdig -k https://kubernetes.default.svc.cluster.local -K /var/run/secrets/kubernetes.io/serviceaccount/token

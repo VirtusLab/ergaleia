@@ -1,4 +1,4 @@
-FROM sysdig/sysdig:latest
+FROM sysdig/sysdig:0.21.0
 
 ARG KUBERNETES_VERSION
 
@@ -24,3 +24,5 @@ RUN chmod +x /usr/local/bin/kubectl
 
 ADD ksysdig /usr/local/bin/ksysdig
 RUN chmod +x /usr/local/bin/ksysdig
+
+ENTRYPOINT ["bash"]

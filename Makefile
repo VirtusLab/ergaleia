@@ -59,9 +59,6 @@ endif
 docker-build: check-env ## Build the container
 	@echo "+ $@"
 	@docker build --build-arg KUBERNETES_VERSION=$(KUBERNETES_VERSION) -t $(REPO):$(GITCOMMIT) .
-	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
-	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
-	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
 
 .PHONY: docker-login
 docker-login: ## Log in into the repository
@@ -76,9 +73,21 @@ docker-images: ## List all local containers
 .PHONY: docker-push
 docker-push: docker-login ## Push the container
 	@echo "+ $@"
+	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
+	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
+	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
 	@docker push $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
 	@docker push $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)
 	@docker push $(DOCKER_REGISTRY)/$(REPO):$(LATEST_TAG)
+
+.PHONY: docker-run
+docker-run: docker-build ## Build and run the container
+	docker run -i -t --privileged \
+      -v /var/run/docker.sock:/host/var/run/docker.sock \
+      -v /dev:/host/dev -v /proc:/host/proc:ro \
+      -v /boot:/host/boot:ro \
+      -v /lib/modules:/host/lib/modules:ro \
+      -v /usr:/host/usr:ro $(REPO):$(GITCOMMIT)
 
 .PHONY: bump-version
 BUMP := patch

@@ -45,3 +45,5 @@ Other selected pre-installed commands:
 - `telnet`
 - `tcpdump`
 - `traceroute`
+- `tracepath`
+- `nmap`

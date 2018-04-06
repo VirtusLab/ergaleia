@@ -1,5 +1,8 @@
 FROM sysdig/sysdig:0.21.0
 
+# Disable prompts from apt.
+ARG DEBIAN_FRONTEND=noninteractive
+
 ARG KUBERNETES_VERSION
 
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \
@@ -15,7 +18,9 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \
         telnet \
         tcpdump \
         inetutils-traceroute \
+        iputils-tracepath \
         docker-ce \
+        nmap \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 

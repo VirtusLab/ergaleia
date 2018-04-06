@@ -13,6 +13,8 @@ Kubernetes toolbox in a pod, with [Sysdig](https://github.com/draios/sysdig) and
     docker pull quay.io/virtuslab/ergaleia:v0.0.6
     docker run quay.io/virtuslab/ergaleia:v0.0.6
 
+Note: to use with PodSecurityPolicy you need to provide a `priviledged` policy and role shown in [privileged-psp.yaml](kubernetes/privileged-psp.yaml)
+
 ### Sysdig
 
 To run `csysdig` with a Kubernetes service token, here's an alias:

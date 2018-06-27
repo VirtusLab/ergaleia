@@ -1,7 +1,12 @@
+PATH  := $(GOPATH)/bin:$(PATH)
+
 # Import config
 # You can change the default config with `make config="config_special.env" build`
 config ?= config.env
 include $(config)
+
+# Set an output prefix, which is the local directory if not specified
+PREFIX?=$(shell pwd)
 
 VERSION := $(shell cat VERSION)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
@@ -93,7 +98,7 @@ docker-run: docker-build ## Build and run the container
 BUMP := patch
 bump-version: ## Bump the version in the version file. Set BUMP to [ patch | major | minor ]
 	@go get -u github.com/jessfraz/junk/sembump # update sembump tool
-	$(shell command -v sembump)
+	$(shell which sembump)
 	$(eval NEW_VERSION=$(shell sembump --kind $(BUMP) $(VERSION)))
 	@echo "Bumping VERSION from $(VERSION) to $(NEW_VERSION)"
 	echo $(NEW_VERSION) > VERSION
@@ -116,9 +121,16 @@ help:
 
 .PHONY: status
 status: ## Shows git and dep status
-	@echo "Changed files:"
-	@git status --porcelain
+	@echo "+ $@"
+	@echo "Commit: $(GITCOMMIT), VERSION: $(VERSION)"
 	@echo
+ifneq ($(GITUNTRACKEDCHANGES),)
+	@echo "Changed files:"
+	@git status --porcelain --untracked-files=no
+	@echo
+endif
+ifneq ($(GITIGNOREDBUTTRACKEDCHANGES),)
 	@echo "Ignored but tracked files:"
 	@git ls-files -i --exclude-standard
 	@echo
+endif

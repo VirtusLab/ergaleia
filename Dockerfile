@@ -21,6 +21,9 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \
         iputils-tracepath \
         docker-ce \
         nmap \
+        net-tools \
+        netcat \
+        tcptraceroute \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 

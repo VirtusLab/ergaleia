@@ -121,7 +121,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: ergaleia
-        image: quay.io/virtuslab/ergaleia:v0.0.8
+        image: quay.io/virtuslab/ergaleia:v0.0.9
         command:
         - /bin/bash
         args:

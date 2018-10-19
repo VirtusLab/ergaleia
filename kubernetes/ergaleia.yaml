@@ -88,7 +88,7 @@ roleRef:
 
 ---
 kind: StatefulSet
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 metadata:
   name: ergaleia
   namespace: toolbox
@@ -96,6 +96,9 @@ metadata:
     name: ergaleia
     k8s-app: ergaleia
 spec:
+  selector:
+    matchLabels:
+      k8s-app: ergaleia
   updateStrategy:
     type: RollingUpdate
   serviceName: none

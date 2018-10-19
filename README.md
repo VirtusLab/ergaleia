@@ -10,7 +10,7 @@ Kubernetes toolbox in a pod, with [Sysdig](https://github.com/draios/sysdig) and
     kubectl apply -f https://raw.githubusercontent.com/virtuslab/ergaleia/master/kubernetes/ergaleia.yaml
     kubectl exec -n toolbox -it ergaleia-0 bash
 
-Note: to use with PodSecurityPolicy you need to provide a `priviledged` policy and role shown in [privileged-psp.yaml](kubernetes/privileged-psp.yaml)
+Note: to use with `PodSecurityPolicy` you need to provide a `priviledged` policy and role shown in [privileged-psp.yaml](kubernetes/privileged-psp.yaml)
 
 ## Removal
 

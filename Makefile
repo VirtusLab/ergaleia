@@ -1,3 +1,5 @@
+# Set POSIX sh for maximum interoperability
+SHELL := /bin/sh
 PATH  := $(GOPATH)/bin:$(PATH)
 
 # Import config
@@ -8,11 +10,16 @@ include $(config)
 # Set an output prefix, which is the local directory if not specified
 PREFIX?=$(shell pwd)
 
-VERSION := $(shell cat VERSION)
+VERSION := $(shell cat VERSION.txt)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
+GITBRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
+GITIGNOREDBUTTRACKEDCHANGES := $(shell git ls-files -i --exclude-standard)
 ifneq ($(GITUNTRACKEDCHANGES),)
-	GITCOMMIT := $(GITCOMMIT)-dirty
+    GITCOMMIT := $(GITCOMMIT)-dirty
+endif
+ifneq ($(GITIGNOREDBUTTRACKEDCHANGES),)
+    GITCOMMIT := $(GITCOMMIT)-dirty
 endif
 
 KUBERNETES_VERSION ?= latest
@@ -48,9 +55,11 @@ endif
 
 .PHONY: all
 all: docker-build docker-images docker-push ## Runs a docker-build, docker-images, docker-push
+	@echo "+ $@"
 
 .PHONY: check-env
 check-env: ## Checks the environment variables
+	@echo "+ $@"
 ifndef KUBERNETES_VERSION
 	$(error KUBERNETES_VERSION is undefined)
 endif
@@ -87,33 +96,35 @@ docker-push: docker-login ## Push the container
 
 .PHONY: docker-run
 docker-run: docker-build ## Build and run the container
+	@echo "+ $@"
 	docker run -i -t --privileged \
-      -v /var/run/docker.sock:/host/var/run/docker.sock \
-      -v /dev:/host/dev -v /proc:/host/proc:ro \
-      -v /boot:/host/boot:ro \
-      -v /lib/modules:/host/lib/modules:ro \
-      -v /usr:/host/usr:ro $(REPO):$(GITCOMMIT)
+          -v /var/run/docker.sock:/host/var/run/docker.sock \
+          -v /dev:/host/dev -v /proc:/host/proc:ro \
+          -v /boot:/host/boot:ro \
+          -v /lib/modules:/host/lib/modules:ro \
+          -v /usr:/host/usr:ro $(REPO):$(GITCOMMIT)
 
 .PHONY: bump-version
 BUMP := patch
 bump-version: ## Bump the version in the version file. Set BUMP to [ patch | major | minor ]
+	@echo "+ $@"
 	@go get -u github.com/jessfraz/junk/sembump # update sembump tool
-#	$(shell which sembump)
 	$(eval NEW_VERSION=$(shell sembump --kind $(BUMP) $(VERSION)))
-	@echo "Bumping VERSION from $(VERSION) to $(NEW_VERSION)"
-	echo $(NEW_VERSION) > VERSION
+	@echo "Bumping VERSION.txt from $(VERSION) to $(NEW_VERSION)"
+	echo $(NEW_VERSION) > VERSION.txt
 	@echo "Updating version from $(VERSION) to $(NEW_VERSION) in README.md"
 	sed -i s/$(VERSION)/$(NEW_VERSION)/g README.md
 	@echo "Updating version from $(VERSION) to $(NEW_VERSION) in kubernetes/ergaleia.yaml"
 	sed -i s/$(VERSION)/$(NEW_VERSION)/g kubernetes/ergaleia.yaml
-	git add VERSION README.md kubernetes/ergaleia.yaml
-	git commit -vsam "Bump version to $(NEW_VERSION)"
+	git add VERSION.txt README.md kubernetes/ergaleia.yaml
+	git commit -vsaem "Bump version to $(NEW_VERSION)"
 	@echo "Run make tag to create and push the tag for new version $(NEW_VERSION)"
 
 .PHONY: tag
 tag: ## Create a new git tag to prepare to build a release
+	@echo "+ $@"
 	git tag -sa $(VERSION) -m "$(VERSION)"
-	@echo "Run git push origin $(VERSION) to push your new tag to GitHub and trigger a travis build."
+	git push origin $(VERSION)
 
 .PHONY: help
 help:

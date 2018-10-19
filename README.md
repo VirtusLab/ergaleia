@@ -1,5 +1,5 @@
 # ergaleia
-[![Version](https://img.shields.io/badge/version-v0.0.10-brightgreen.svg)](https://quay.io/virtuslab/ergaleia:v0.0.10)
+[![Version](https://img.shields.io/badge/version-v0.0.11-brightgreen.svg)](https://quay.io/virtuslab/ergaleia:v0.0.11)
 [![Build Status](https://secure.travis-ci.org/VirtusLab/ergaleia.svg?branch=master)](http://travis-ci.org/VirtusLab/ergaleia)
 
 

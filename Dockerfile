@@ -1,4 +1,4 @@
-FROM sysdig/sysdig:0.24.1
+FROM sysdig/sysdig:0.24.2
 
 # Disable prompts from apt.
 ARG DEBIAN_FRONTEND=noninteractive

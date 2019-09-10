@@ -26,6 +26,8 @@ RUN apt-get install -y --no-install-recommends \
         net-tools \
         netcat \
         tcptraceroute \
+        wget \
+        socat \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 

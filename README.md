@@ -32,7 +32,7 @@ The command will get it's credentials from the service token, no special configu
 
 ## Packages and binaries
 
-The image is based on Debian, so if there's anything missing just use `apt`.
+The image is based on **Debian**, so if there's anything missing just use `apt`.
 
 Most important pre-installed commands:
 - `sysdig` and `csysdig`
@@ -50,3 +50,5 @@ Other selected pre-installed commands:
 - `traceroute`
 - `tracepath`
 - `nmap`
+- `wget`
+- `socat`

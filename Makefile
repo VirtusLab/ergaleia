@@ -1,14 +1,13 @@
 # Set POSIX sh for maximum interoperability
 SHELL := /bin/sh
-PATH  := $(GOPATH)/bin:$(PATH)
-
-# Import config
-# You can change the default config with `make config="config_special.env" build`
-config ?= config.env
-include $(config)
 
 # Set an output prefix, which is the local directory if not specified
 PREFIX?=$(shell pwd)
+
+# Setup variables for the Makefile
+NAME=ergaleia
+REPO=virtuslab/ergaleia
+DOCKER_REGISTRY=quay.io
 
 VERSION := $(shell cat VERSION.txt)
 GITCOMMIT := $(shell git rev-parse --short HEAD)

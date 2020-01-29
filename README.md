@@ -52,3 +52,7 @@ Other selected pre-installed commands:
 - `nmap`
 - `wget`
 - `socat`
+
+### Simmilar projects
+
+- [`kubectl dig` plugin](https://github.com/sysdiglabs/kubectl-dig)

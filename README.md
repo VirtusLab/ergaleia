@@ -53,6 +53,6 @@ Other selected pre-installed commands:
 - `wget`
 - `socat`
 
-### Simmilar projects
+## Simmilar projects
 
 - [`kubectl dig` plugin](https://github.com/sysdiglabs/kubectl-dig)

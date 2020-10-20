@@ -6,8 +6,8 @@ PREFIX?=$(shell pwd)
 
 # Setup variables for the Makefile
 NAME=ergaleia
-REPO=virtuslab/ergaleia
-DOCKER_REGISTRY=quay.io
+REPO?=virtuslab/ergaleia
+DOCKER_REGISTRY?=quay.io
 
 VERSION := $(shell cat VERSION.txt)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
@@ -86,7 +86,7 @@ docker-images: ## List all local containers
 	docker images
 
 .PHONY: docker-push
-docker-push: docker-login ## Push the container
+docker-push: ## Push the container
 	@echo "+ $@"
 	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(DETAILED_TAG)
 	@docker tag $(REPO):$(GITCOMMIT) $(DOCKER_REGISTRY)/$(REPO):$(VERSION_TAG)

@@ -21,6 +21,6 @@ script:
 deploy:
   provider: script
   script:
-  - make -e docker-push
+  - make -e docker-login docker-push
   on:
     tags: true

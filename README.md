@@ -26,7 +26,7 @@ To run `csysdig` with a Kubernetes service token, here's an alias:
     
 ### kubectl
 
-The command will get it's credentials from the service token, no special configuration needed:
+The command will get its credentials from the service token, no special configuration needed:
 
     kubectl version
 
@@ -53,6 +53,6 @@ Other selected pre-installed commands:
 - `wget`
 - `socat`
 
-## Simmilar projects
+## Similar projects
 
 - [`kubectl dig` plugin](https://github.com/sysdiglabs/kubectl-dig)

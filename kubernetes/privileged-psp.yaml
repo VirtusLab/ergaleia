@@ -40,3 +40,19 @@ rules:
   verbs:
   - use
 
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-security-policy-privileged-ergaleia
+  namespace: toolbox
+  labels:
+    name: ergaleia
+subjects:
+- kind: ServiceAccount
+  namespace: toolbox
+  name: ergaleia
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: privileged-psp-user

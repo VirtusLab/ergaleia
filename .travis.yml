@@ -13,7 +13,7 @@ env:
   matrix:
   - KUBERNETES_VERSION=latest
   - KUBERNETES_VERSION=stable
-  - KUBERNETES_VERSION=v1.17.13
+  - KUBERNETES_VERSION=v1.18.10
 
 script:
 - make -e docker-build docker-images

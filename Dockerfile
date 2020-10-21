@@ -16,6 +16,7 @@ RUN apt-get install -y --no-install-recommends \
         apt-transport-https \
         apt-utils \
         vim \
+        curl \
         dnsutils \
         telnet \
         tcpdump \
@@ -28,6 +29,8 @@ RUN apt-get install -y --no-install-recommends \
         tcptraceroute \
         wget \
         socat \
+        ssh \
+        git \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 

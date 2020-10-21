@@ -52,6 +52,8 @@ Other selected pre-installed commands:
 - `nmap`
 - `wget`
 - `socat`
+- `ssh`
+- `git`
 
 ## Similar projects
 

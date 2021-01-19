@@ -55,6 +55,12 @@ Other selected pre-installed commands:
 - `ssh`
 - `git`
 
+## Usage with a custom image repository
+
+    make docker-build -e KUBERNETES_VERSION=stable DOCKER_REGISTRY=custom.example.com REPO=my/ergaleia
+    docker login
+    make docker-push -e KUBERNETES_VERSION=stable DOCKER_REGISTRY=custom.example.com REPO=my/ergaleia
+
 ## Similar projects
 
 - [`kubectl dig` plugin](https://github.com/sysdiglabs/kubectl-dig)
